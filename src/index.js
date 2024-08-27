@@ -5,6 +5,9 @@ app.use(express.json())
 const employees = []
 const classes = []
 
+let nextEmployeeId = 1
+let nextClassId = 1
+
 function verifyEmployeeAlreadyExists(req, res, next) {
     const { employeeRegistration } = req.body
     const EmployeeAlreadyExists = employees.some((employee) => employee.employeeRegistration === employeeRegistration)
@@ -96,7 +99,7 @@ function verifyLogin(req, res, next) {
         return next()
     } else {
         return res.status(400).json({
-            error: "Invalid login!"
+            error: "Invalid login! Verify your cpf or password!"
         })
     }
 }
@@ -116,10 +119,10 @@ function verifyClassLinkedEmployee(req, res, next) {
 }
 
 app.post("/register/employee", verifyEmployeeAlreadyExists, (req, res) => {
-    const { name, employeeRegistration, password, cpf, email, birthDate, cellPhone } = req.body
+    const { name, password, cpf, email, birthDate, cellPhone } = req.body
     employees.push({
         name: nameFormated(name),
-        employeeRegistration,
+        employeeRegistration: nextEmployeeId++,
         cpf: cpfFormated(cpf),
         password,
         email,
@@ -132,10 +135,10 @@ app.post("/register/employee", verifyEmployeeAlreadyExists, (req, res) => {
 }) // POST REGISTER EMPLOYEE
 
 app.post("/register/class", verifyClassAlreadyExists, (req, res) => {
-    const { name, id } = req.body
+    const { name } = req.body
     classes.push({
         name, 
-        id,
+        id: nextClassId++,
         createdAt: dateFormated()
     })
     return res.status(201).send()
