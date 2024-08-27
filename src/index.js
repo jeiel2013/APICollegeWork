@@ -87,19 +87,19 @@ function dateFormated() {
 }
 
 function verifyLogin(req, res, next) {
-    const { cpf, password } = req.headers
-    const searchByCPF = employees.find((searchByCPF) => searchByCPF.cpf === cpfFormated(cpf))
+    const { username, password } = req.headers
+    const searchByUsername = employees.find((searchByUsername) => searchByUsername.username === username)
 
-    if (!searchByCPF) {
+    if (!searchByUsername) {
         return res.status(400).json({
             error: "Employee not found!"
         })
     }
-    if(searchByCPF.cpf === cpfFormated(cpf) && searchByCPF.password === password) {
+    if(searchByUsername.username === username && searchByUsername.password === password) {
         return next()
     } else {
         return res.status(400).json({
-            error: "Invalid login! Verify your cpf or password!"
+            error: "Invalid login! Verify your username or password!"
         })
     }
 }
@@ -119,9 +119,10 @@ function verifyClassLinkedEmployee(req, res, next) {
 }
 
 app.post("/register/employee", verifyEmployeeAlreadyExists, (req, res) => {
-    const { name, password, cpf, email, birthDate, cellPhone } = req.body
+    const { name, username, password, cpf, email, birthDate, cellPhone } = req.body
     employees.push({
         name: nameFormated(name),
+        username,
         employeeRegistration: nextEmployeeId++,
         cpf: cpfFormated(cpf),
         password,
@@ -196,20 +197,20 @@ app.get("/search/class", verifyIfClassExists, (req,res) => {
 
 app.put("/employee", verifyLogin, (req, res) => {
     const { name, password, email, birthDate, cellPhone } = req.body
-    const { cpf } = req.headers
-    const searchByCPF = employees.find((searchByCPF) => searchByCPF.cpf === cpfFormated(cpf))
+    const { username } = req.headers
+    const searchByUsername = employees.find((searchByUsername) => searchByUsername.username === username)
 
-    if (!searchByCPF) {
+    if (!searchByUsername) {
         return res.status(400).json({
             error: "Employee not found!"
         })
     }
 
-    searchByCPF.name = nameFormated(name)
-    searchByCPF.password = password
-    searchByCPF.email = email
-    searchByCPF.birthDate = birthDate
-    searchByCPF.cellPhone = cellFormated(cellPhone)
+    searchByUsername.name = nameFormated(name)
+    searchByUsername.password = password
+    searchByUsername.email = email
+    searchByUsername.birthDate = birthDate
+    searchByUsername.cellPhone = cellFormated(cellPhone)
     return res.status(200).send()
 }) // PUT EMPLOYEE
 
